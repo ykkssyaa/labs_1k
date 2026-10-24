@@ -2,7 +2,10 @@ module github.com/ykkssyaa/vestnik-cms
 
 go 1.25.0
 
-require modernc.org/sqlite v1.59.0
+require (
+	golang.org/x/image v0.45.0
+	modernc.org/sqlite v1.59.0
+)
 
 require (
 	github.com/dustin/go-humanize v1.0.1 // indirect

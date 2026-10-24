@@ -1,0 +1,13 @@
+{
+  "name": "page",
+  "version": 1,
+  "label": "Страница",
+  "label_plural": "Страницы",
+  "url_prefix": "",
+  "fields": [
+    {"name": "body", "label": "Текст", "type": "markdown", "required": true},
+    {"name": "show_in_menu", "label": "Показывать в меню", "type": "bool"},
+    {"name": "menu_order", "label": "Порядок в меню", "type": "int", "min": 0, "max": 100, "default": 50}
+  ],
+  "migrations": []
+}
