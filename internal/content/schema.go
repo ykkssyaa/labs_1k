@@ -32,6 +32,12 @@ var knownFieldTypes = map[string]bool{
 	FieldDate: true, FieldDateTime: true, FieldSelect: true, FieldURL: true, FieldMedia: true,
 }
 
+// ReservedPrefixes — первые сегменты адресов, занятые системными маршрутами (spec/05-public.md, 4.3).
+var ReservedPrefixes = map[string]bool{
+	"admin": true, "api": true, "static": true, "uploads": true, "section": true, "tag": true, "search": true,
+	"healthz": true,
+}
+
 var nameRe = regexp.MustCompile(`^[a-z][a-z0-9_]*$`)
 var prefixRe = regexp.MustCompile(`^[a-z0-9-]*$`)
 
@@ -127,6 +133,9 @@ func (t *Type) check() error {
 	}
 	if !prefixRe.MatchString(t.URLPrefix) {
 		return fmt.Errorf("url_prefix %q: только a-z, 0-9 и -", t.URLPrefix)
+	}
+	if ReservedPrefixes[t.URLPrefix] {
+		return fmt.Errorf("url_prefix %q зарезервирован системой", t.URLPrefix)
 	}
 	if len(t.Fields) == 0 {
 		return fmt.Errorf("нет полей")

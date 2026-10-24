@@ -15,16 +15,17 @@ func NewEntryRepo(q DBTX) *EntryRepo { return &EntryRepo{q: q} }
 
 // EntryFilter — условия выборки списка материалов. Пустые поля не фильтруют.
 type EntryFilter struct {
-	Type       string
-	Types      []string
-	Status     string
-	AuthorID   int64
-	CategoryID int64
-	TagID      int64
-	Query      string // подстрока, ищется по полю search (нижний регистр)
-	Sort       string // "updated" (по умолчанию), "published", "title"
-	Limit      int
-	Offset     int
+	Type        string
+	Types       []string
+	Status      string
+	AuthorID    int64
+	CategoryID  int64
+	CategoryIDs []int64 // любая из рубрик (рубрика с подрубриками)
+	TagID       int64
+	Query       string // подстрока, ищется по полю search (нижний регистр)
+	Sort        string // "updated" (по умолчанию), "published", "title"
+	Limit       int
+	Offset      int
 }
 
 const entryColumns = `e.id, e.type, e.title, e.slug, e.status, e.author_id, COALESCE(u.name, ''),
@@ -154,6 +155,13 @@ func (r *EntryRepo) List(ctx context.Context, f EntryFilter) ([]*Entry, int, err
 	if f.CategoryID != 0 {
 		where = append(where, "EXISTS (SELECT 1 FROM entry_terms et WHERE et.entry_id = e.id AND et.term_id = ?)")
 		args = append(args, f.CategoryID)
+	}
+	if len(f.CategoryIDs) > 0 {
+		where = append(where, "EXISTS (SELECT 1 FROM entry_terms et WHERE et.entry_id = e.id AND et.term_id IN (?"+
+			strings.Repeat(",?", len(f.CategoryIDs)-1)+"))")
+		for _, id := range f.CategoryIDs {
+			args = append(args, id)
+		}
 	}
 	if f.TagID != 0 {
 		where = append(where, "EXISTS (SELECT 1 FROM entry_terms et WHERE et.entry_id = e.id AND et.term_id = ?)")

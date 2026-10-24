@@ -1,0 +1,9 @@
+{{/* Переопределяет header классической темы: газетная «шапка» с датой. Остальное наследуется. */}}
+{{define "header"}}<header class="masthead">
+  <div class="wrap">
+    <p class="edition">Городское издание · выходит ежедневно</p>
+    <a class="title" href="/">{{.SiteName}}</a>
+    <form class="search" action="/search" method="get"><input type="search" name="q" placeholder="Поиск по архиву" aria-label="Поиск"></form>
+  </div>
+  {{template "menu" .}}
+</header>{{end}}

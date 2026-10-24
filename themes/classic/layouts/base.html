@@ -1,0 +1,16 @@
+{{define "base"}}<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{{template "meta" .}}
+<link rel="stylesheet" href="/static/{{.Theme}}/site.css">
+</head>
+<body class="theme-{{.Theme}}">
+{{template "header" .}}
+<main class="wrap">
+{{block "content" .}}{{end}}
+</main>
+{{template "footer" .}}
+</body>
+</html>{{end}}

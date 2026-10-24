@@ -141,6 +141,20 @@ func (e *Engine) resolve(theme, page string) ([]string, error) {
 	return append(files, pageFile), nil
 }
 
+// Has — есть ли страница page в теме или её родителях.
+func (e *Engine) Has(theme, page string) bool {
+	chain, err := e.chain(theme)
+	if err != nil {
+		return false
+	}
+	for _, name := range chain {
+		if fileExists(filepath.Join(e.dir, name, "pages", page+".html")) {
+			return true
+		}
+	}
+	return false
+}
+
 func fileExists(p string) bool {
 	st, err := os.Stat(p)
 	return err == nil && !st.IsDir()

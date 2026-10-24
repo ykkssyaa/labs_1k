@@ -1,0 +1,10 @@
+{{define "meta"}}<title>{{.Meta.Title}}</title>
+{{with .Meta.Description}}<meta name="description" content="{{.}}">{{end}}
+<link rel="canonical" href="{{.Meta.Canonical}}">
+<meta property="og:site_name" content="{{.SiteName}}">
+<meta property="og:type" content="{{.Meta.OGType}}">
+<meta property="og:title" content="{{.Meta.Title}}">
+{{with .Meta.Description}}<meta property="og:description" content="{{.}}">{{end}}
+<meta property="og:url" content="{{.Meta.Canonical}}">
+{{with .Meta.Image}}<meta property="og:image" content="{{.}}">{{end}}
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">{{end}}

@@ -18,6 +18,8 @@ import (
 	"github.com/ykkssyaa/vestnik-cms/internal/store"
 	"github.com/ykkssyaa/vestnik-cms/internal/web"
 	"github.com/ykkssyaa/vestnik-cms/internal/web/admin"
+	"github.com/ykkssyaa/vestnik-cms/internal/web/api"
+	"github.com/ykkssyaa/vestnik-cms/internal/web/site"
 )
 
 type App struct {
@@ -61,7 +63,14 @@ func build(cfg config.Config, log *slog.Logger, db *sql.DB) (*App, error) {
 	a.Content.Audit = a.Auth
 	a.Taxonomy = &content.Taxonomy{DB: db, Auth: policy, Audit: a.Auth}
 	a.Media = media.NewService(db, cfg.UploadsDir, policy)
-	if a.Render, err = render.New(cfg.ThemesDir, web.Funcs(types)); err != nil {
+	lookup := func(ctx context.Context, id int64) *store.Media {
+		m, err := a.Media.Get(ctx, id)
+		if err != nil {
+			return nil
+		}
+		return m
+	}
+	if a.Render, err = render.New(cfg.ThemesDir, web.Funcs(types, lookup)); err != nil {
 		return nil, fmt.Errorf("themes: %w", err)
 	}
 
@@ -96,10 +105,24 @@ func (a *App) Handler() http.Handler {
 		fmt.Fprintln(w, "ok")
 	})
 	mux.Handle("GET /static/{theme}/{file...}", a.Render.Static())
-	mux.Handle("GET /uploads/", http.StripPrefix("/uploads/", noDirListing(http.FileServer(http.Dir(a.Cfg.UploadsDir)))))
+	// Медиа лежат как ГГГГ/ММ/имя: шаблон из трёх сегментов не пересекается с /{префикс}/{slug} сайта.
+	mux.Handle("GET /uploads/{y}/{m}/{file}", http.StripPrefix("/uploads/", noDirListing(http.FileServer(http.Dir(a.Cfg.UploadsDir)))))
+
+	settings := store.NewSettingsRepo(a.DB)
+	lookup := func(ctx context.Context, id int64) *store.Media {
+		if m, err := a.Media.Get(ctx, id); err == nil {
+			return m
+		}
+		return nil
+	}
+	pub := &site.Handler{Content: a.Content, Taxonomy: a.Taxonomy, Render: a.Render, Settings: settings, Media: lookup,
+		BaseURL: a.Cfg.BaseURL, DefaultTheme: a.Cfg.Theme, SiteName: "Вестник", Log: a.Log}
+	pub.Routes(mux)
+	(&api.Handler{Content: a.Content, Taxonomy: a.Taxonomy, Media: lookup, BaseURL: a.Cfg.BaseURL, Log: a.Log}).Routes(mux)
 
 	adm := &admin.Handler{Content: a.Content, Taxonomy: a.Taxonomy, Media: a.Media, Auth: a.Auth, Policy: a.Policy,
-		Render: a.Render, Log: a.Log, SecureCookie: strings.HasPrefix(a.Cfg.BaseURL, "https://")}
+		Render: a.Render, Settings: settings, ActiveTheme: pub.Theme, Log: a.Log,
+		SecureCookie: strings.HasPrefix(a.Cfg.BaseURL, "https://")}
 	adm.Routes(mux)
 	return a.securityHeaders(a.logRequests(mux))
 }

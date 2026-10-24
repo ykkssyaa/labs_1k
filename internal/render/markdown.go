@@ -133,6 +133,15 @@ func inline(s string) string {
 	return s
 }
 
+var plainRe = regexp.MustCompile("(?m)^\\s*(#{1,3}|>|[-*]|\\d+[.)])\\s+|\\*\\*|\\*|`")
+
+// PlainText — текст markdown без разметки, обрезанный до n символов (для description).
+func PlainText(src string, n int) string {
+	s := plainRe.ReplaceAllString(src, "")
+	s = linkRe.ReplaceAllString(s, "$1")
+	return truncate(n, strings.Join(strings.Fields(s), " "))
+}
+
 // safeURL проверяет адрес ссылки. href приходит уже экранированным; схему
 // проверяем по раскодированному значению, а в атрибут кладём экранированное.
 func safeURL(escaped string) (string, bool) {

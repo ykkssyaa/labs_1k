@@ -1,0 +1,7 @@
+{{define "card"}}<article class="card">
+  {{with cover .}}{{with index .Variants "medium"}}<a href="{{entryPath $}}"><img src="/uploads/{{.Path}}" alt="" width="{{.Width}}" height="{{.Height}}" loading="lazy"></a>{{end}}{{end}}
+  <p class="kicker">{{typeLabel .Type}}{{range .Categories}} · {{.Name}}{{end}}</p>
+  <h3><a href="{{entryPath .}}">{{.Title}}</a></h3>
+  {{with summary . 180}}<p class="summary">{{.}}</p>{{end}}
+  <p class="date">{{date .PublishedAt}}</p>
+</article>{{end}}

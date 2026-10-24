@@ -1,0 +1,7 @@
+{{define "content"}}
+<h1>{{.Data.Heading}}</h1>
+<form action="/search" method="get" class="search big"><input type="search" name="q" value="{{.Query.Get "q"}}" placeholder="Что ищем?" autofocus><button>Найти</button></form>
+{{if .Query.Get "q"}}<p class="muted">Найдено: {{.Data.Total}}</p>
+<div class="grid">{{range .Data.Entries}}{{template "card" .}}{{end}}</div>
+{{template "pager" (dict "P" .Data "Q" .Query)}}{{end}}
+{{end}}

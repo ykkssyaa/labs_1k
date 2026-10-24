@@ -1,0 +1,5 @@
+{{define "pager"}}{{if gt .P.Pages 1}}<nav class="pager">
+  {{if gt .P.Page 1}}<a href="{{query .Q "page" (sub .P.Page 1)}}" rel="prev">← Назад</a>{{end}}
+  <span>Страница {{.P.Page}} из {{.P.Pages}}</span>
+  {{if lt .P.Page .P.Pages}}<a href="{{query .Q "page" (add .P.Page 1)}}" rel="next">Дальше →</a>{{end}}
+</nav>{{end}}{{end}}

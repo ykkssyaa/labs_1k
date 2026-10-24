@@ -1,0 +1,7 @@
+{{define "header"}}<header class="site-header">
+  <div class="wrap head">
+    <a class="logo" href="/">{{.SiteName}}</a>
+    <form class="search" action="/search" method="get"><input type="search" name="q" placeholder="Поиск" value="{{.Query.Get "q"}}" aria-label="Поиск"></form>
+  </div>
+  {{template "menu" .}}
+</header>{{end}}
