@@ -2,6 +2,7 @@
 //
 //	vestnik serve    — запустить сервер (по умолчанию)
 //	vestnik migrate  — только применить миграции
+//	vestnik adduser EMAIL ИМЯ РОЛЬ ПАРОЛЬ — создать пользователя
 package main
 
 import (
@@ -15,7 +16,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/ykkssyaa/vestnik-cms/internal/access"
 	"github.com/ykkssyaa/vestnik-cms/internal/app"
+	"github.com/ykkssyaa/vestnik-cms/internal/auth"
 	"github.com/ykkssyaa/vestnik-cms/internal/config"
 )
 
@@ -48,6 +51,17 @@ func run(cmd string, args []string, log *slog.Logger) error {
 		return nil
 	case "serve":
 		return serve(a)
+	case "adduser":
+		if len(args) != 4 {
+			return fmt.Errorf("использование: vestnik adduser EMAIL ИМЯ РОЛЬ ПАРОЛЬ")
+		}
+		u, err := a.Auth.CreateUser(context.Background(), access.Actor{},
+			auth.UserInput{Email: args[0], Name: args[1], Role: args[2], Password: args[3]})
+		if err != nil {
+			return err
+		}
+		log.Info("user created", "id", u.ID, "email", u.Email, "role", u.Role)
+		return nil
 	default:
 		return fmt.Errorf("неизвестная команда %q", cmd)
 	}

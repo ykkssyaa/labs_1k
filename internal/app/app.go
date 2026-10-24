@@ -7,20 +7,30 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strings"
 
+	"github.com/ykkssyaa/vestnik-cms/internal/access"
+	"github.com/ykkssyaa/vestnik-cms/internal/auth"
 	"github.com/ykkssyaa/vestnik-cms/internal/config"
 	"github.com/ykkssyaa/vestnik-cms/internal/content"
 	"github.com/ykkssyaa/vestnik-cms/internal/media"
+	"github.com/ykkssyaa/vestnik-cms/internal/render"
 	"github.com/ykkssyaa/vestnik-cms/internal/store"
+	"github.com/ykkssyaa/vestnik-cms/internal/web"
+	"github.com/ykkssyaa/vestnik-cms/internal/web/admin"
 )
 
 type App struct {
-	Cfg     config.Config
-	DB      *sql.DB
-	Log     *slog.Logger
-	Types   *content.Registry
-	Content *content.Service
-	Media   *media.Service
+	Cfg      config.Config
+	DB       *sql.DB
+	Log      *slog.Logger
+	Types    *content.Registry
+	Policy   *access.Policy
+	Content  *content.Service
+	Taxonomy *content.Taxonomy
+	Media    *media.Service
+	Auth     *auth.Service
+	Render   *render.Engine
 }
 
 func New(cfg config.Config, log *slog.Logger) (*App, error) {
@@ -28,18 +38,35 @@ func New(cfg config.Config, log *slog.Logger) (*App, error) {
 	if err != nil {
 		return nil, fmt.Errorf("db: %w", err)
 	}
-	types, err := content.LoadRegistry(cfg.ContentTypesDir)
+	a, err := build(cfg, log, db)
 	if err != nil {
 		db.Close()
 		return nil, err
 	}
-	a := &App{Cfg: cfg, DB: db, Log: log, Types: types}
-	// Пока нет политики доступа (этап 3), сервис используется только для синхронизации схем.
-	a.Content = content.NewService(db, types, nil)
-	a.Media = media.NewService(db, cfg.UploadsDir, nil)
+	return a, nil
+}
+
+func build(cfg config.Config, log *slog.Logger, db *sql.DB) (*App, error) {
+	types, err := content.LoadRegistry(cfg.ContentTypesDir)
+	if err != nil {
+		return nil, err
+	}
+	policy, err := access.LoadPolicy(cfg.RolesFile)
+	if err != nil {
+		return nil, err
+	}
+	a := &App{Cfg: cfg, DB: db, Log: log, Types: types, Policy: policy}
+	a.Auth = auth.NewService(db, policy)
+	a.Content = content.NewService(db, types, policy)
+	a.Content.Audit = a.Auth
+	a.Taxonomy = &content.Taxonomy{DB: db, Auth: policy, Audit: a.Auth}
+	a.Media = media.NewService(db, cfg.UploadsDir, policy)
+	if a.Render, err = render.New(cfg.ThemesDir, web.Funcs(types)); err != nil {
+		return nil, fmt.Errorf("themes: %w", err)
+	}
+
 	synced, err := a.Content.Sync(context.Background())
 	if err != nil {
-		db.Close()
 		return nil, fmt.Errorf("sync content types: %w", err)
 	}
 	for _, r := range synced {
@@ -49,6 +76,14 @@ func New(cfg config.Config, log *slog.Logger) (*App, error) {
 }
 
 func (a *App) Close() error { return a.DB.Close() }
+
+// TestConfig — конфигурация для тестов: БД в памяти, каталоги проекта относительно root.
+func TestConfig(root string) config.Config {
+	return config.Config{
+		DBPath: ":memory:", Theme: "classic", BaseURL: "http://test.local",
+		ContentTypesDir: root + "/content_types", RolesFile: root + "/config/roles.json", ThemesDir: root + "/themes",
+	}
+}
 
 // Handler возвращает корневой обработчик со всеми маршрутами.
 func (a *App) Handler() http.Handler {
@@ -60,7 +95,34 @@ func (a *App) Handler() http.Handler {
 		}
 		fmt.Fprintln(w, "ok")
 	})
-	return a.logRequests(mux)
+	mux.Handle("GET /static/{theme}/{file...}", a.Render.Static())
+	mux.Handle("GET /uploads/", http.StripPrefix("/uploads/", noDirListing(http.FileServer(http.Dir(a.Cfg.UploadsDir)))))
+
+	adm := &admin.Handler{Content: a.Content, Taxonomy: a.Taxonomy, Media: a.Media, Auth: a.Auth, Policy: a.Policy,
+		Render: a.Render, Log: a.Log, SecureCookie: strings.HasPrefix(a.Cfg.BaseURL, "https://")}
+	adm.Routes(mux)
+	return a.securityHeaders(a.logRequests(mux))
+}
+
+// noDirListing запрещает просмотр каталогов загрузок.
+func noDirListing(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/") || r.URL.Path == "" {
+			http.NotFound(w, r)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (a *App) securityHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		h := w.Header()
+		h.Set("X-Content-Type-Options", "nosniff")
+		h.Set("X-Frame-Options", "DENY")
+		h.Set("Referrer-Policy", "strict-origin-when-cross-origin")
+		next.ServeHTTP(w, r)
+	})
 }
 
 func (a *App) logRequests(next http.Handler) http.Handler {

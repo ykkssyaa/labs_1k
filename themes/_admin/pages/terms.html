@@ -1,0 +1,26 @@
+{{define "content"}}{{$d := .Data}}
+<div class="cols">
+<section class="card">
+  <h2>Рубрики</h2>
+  <ul class="tree">{{range $d.Categories}}<li>{{if .ParentID}}<span class="muted">↳</span> {{end}}<a href="/admin/terms?edit={{.ID}}">{{.Name}}</a> <span class="muted">/{{.Slug}}</span>
+    <form method="post" action="/admin/terms/{{.ID}}/delete" class="inline" onsubmit="return confirm('Удалить рубрику? Связи с материалами будут сняты.')">{{template "csrf" $}}<button class="link danger">удалить</button></form></li>{{end}}</ul>
+  <h2>Теги</h2>
+  <p>{{range $d.Tags}}<a class="tag" href="/admin/terms?edit={{.ID}}">{{.Name}}</a> {{else}}<span class="muted">Тегов пока нет — они создаются из формы материала.</span>{{end}}</p>
+</section>
+<section class="card">
+  <h2>{{if and $d.Edit $d.Edit.ID}}Изменить «{{$d.Edit.Name}}»{{else}}Новая рубрика или тег{{end}}</h2>
+  <form method="post" action="/admin/terms">{{template "csrf" $}}
+    {{with $d.Edit}}<input type="hidden" name="id" value="{{.ID}}">{{end}}
+    <label>Словарь <select name="vocabulary">
+      <option value="category" {{if and $d.Edit (eq $d.Edit.Vocabulary "tag")}}{{else}}selected{{end}}>Рубрика</option>
+      <option value="tag" {{if and $d.Edit (eq $d.Edit.Vocabulary "tag")}}selected{{end}}>Тег</option></select></label>
+    <label>Название <input name="name" value="{{with $d.Edit}}{{.Name}}{{end}}" required></label>{{with index $d.Errors "name"}}<p class="err">{{.}}</p>{{end}}
+    <label>Адрес <input name="slug" value="{{with $d.Edit}}{{.Slug}}{{end}}" placeholder="из названия"></label>{{with index $d.Errors "slug"}}<p class="err">{{.}}</p>{{end}}
+    <label>Родительская рубрика <select name="parent_id"><option value="0">— верхний уровень —</option>
+      {{range $d.Categories}}<option value="{{.ID}}" {{if and $d.Edit (eq .ID $d.Edit.ParentID)}}selected{{end}}>{{.Name}}</option>{{end}}</select></label>
+    {{with index $d.Errors "parent_id"}}<p class="err">{{.}}</p>{{end}}
+    <button>Сохранить</button> {{if $d.Edit}}<a href="/admin/terms">Отмена</a>{{end}}
+  </form>
+</section>
+</div>
+{{end}}

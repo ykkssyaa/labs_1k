@@ -1,0 +1,10 @@
+{{define "csrf"}}<input type="hidden" name="csrf" value="{{.Cur.CSRF}}">{{end}}
+
+{{define "flash"}}{{if .Flash}}<p class="flash">{{.Flash}}</p>{{end}}{{if .Error}}<p class="flash error">{{.Error}}</p>{{end}}{{end}}
+
+{{define "status"}}<span class="status st-{{.}}">{{statusLabel .}}</span>{{end}}
+
+{{define "pager"}}{{with .Pager}}{{if gt .Pages 1}}<nav class="pager">
+  {{range seq 1 .Pages}}{{if eq . $.Pager.Page}}<b>{{.}}</b>{{else}}<a href="{{query $.Query "page" .}}">{{.}}</a>{{end}}{{end}}
+  <span class="muted">всего {{.Total}}</span>
+</nav>{{end}}{{end}}{{end}}

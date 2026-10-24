@@ -1,0 +1,22 @@
+{{define "content"}}{{$d := .Data}}
+<div class="cols">
+<table class="list">
+  <thead><tr><th>Имя</th><th>Email</th><th>Роль</th><th>Активен</th></tr></thead>
+  <tbody>{{range $d.Users}}<tr><td><a href="/admin/users?edit={{.ID}}">{{.Name}}</a></td><td>{{.Email}}</td><td>{{.Role}}</td><td>{{if .Active}}да{{else}}<b>заблокирован</b>{{end}}</td></tr>{{end}}</tbody>
+</table>
+<section class="card">
+  <h2>{{if and $d.Edit $d.Edit.ID}}Изменить {{$d.Edit.Email}}{{else}}Новый пользователь{{end}}</h2>
+  <form method="post" action="/admin/users">{{template "csrf" $}}
+    {{with $d.Edit}}<input type="hidden" name="id" value="{{.ID}}">{{end}}
+    <label>Email <input type="email" name="email" value="{{with $d.Edit}}{{.Email}}{{end}}" required></label>{{with index $d.Errors "email"}}<p class="err">{{.}}</p>{{end}}
+    <label>Имя <input name="name" value="{{with $d.Edit}}{{.Name}}{{end}}" required></label>{{with index $d.Errors "name"}}<p class="err">{{.}}</p>{{end}}
+    <label>Роль <select name="role">{{range $d.Roles}}<option value="{{.Name}}" {{if and $d.Edit (eq .Name $d.Edit.Role)}}selected{{end}}>{{.Label}}</option>{{end}}</select></label>
+    {{with index $d.Errors "role"}}<p class="err">{{.}}</p>{{end}}
+    <label>Пароль <input type="password" name="password" autocomplete="new-password" placeholder="{{if and $d.Edit $d.Edit.ID}}не менять{{else}}не короче 8 символов{{end}}"></label>
+    {{with index $d.Errors "password"}}<p class="err">{{.}}</p>{{end}}
+    {{if and $d.Edit $d.Edit.ID}}<label class="check"><input type="checkbox" name="active" {{if $d.Edit.Active}}checked{{end}}> Активен</label>{{else}}<input type="hidden" name="active" value="on">{{end}}
+    <button>Сохранить</button> {{if $d.Edit}}<a href="/admin/users">Отмена</a>{{end}}
+  </form>
+</section>
+</div>
+{{end}}

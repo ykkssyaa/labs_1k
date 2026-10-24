@@ -1,0 +1,17 @@
+{{define "content"}}
+<form method="post" action="/admin/media" enctype="multipart/form-data" class="card filters">{{template "csrf" .}}
+  <input type="file" name="file" accept="image/jpeg,image/png,image/gif" required>
+  <input name="alt" placeholder="Описание (alt)">
+  <button>Загрузить</button> <span class="muted">JPEG, PNG, GIF до 10 МБ; создаются размеры thumb 320², medium 800, large 1600</span>
+</form>
+<div class="grid">
+{{range .Data.Items}}<figure class="card media">
+  {{with index .Variants "thumb"}}<img src="/uploads/{{.Path}}" alt="" width="{{.Width}}" height="{{.Height}}" loading="lazy">{{end}}
+  <figcaption>#{{.ID}} {{.Filename}}<br><span class="muted">{{.Width}}×{{.Height}}, {{.MIME}}</span>
+    <form method="post" action="/admin/media/{{.ID}}/alt">{{template "csrf" $}}<input name="alt" value="{{.Alt}}" placeholder="alt"><button class="small">OK</button></form>
+    {{if $.Can "media.delete"}}<form method="post" action="/admin/media/{{.ID}}/delete" onsubmit="return confirm('Удалить файл?')">{{template "csrf" $}}<button class="link danger">удалить</button></form>{{end}}
+  </figcaption>
+</figure>{{else}}<p class="muted">Файлов пока нет.</p>{{end}}
+</div>
+{{template "pager" (dict "Pager" .Data.Pager "Query" .Query)}}
+{{end}}

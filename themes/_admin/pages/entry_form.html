@@ -1,0 +1,47 @@
+{{define "content"}}{{$f := .Data}}
+{{with $f.Entry}}<p class="meta">{{template "status" .Status}} · автор {{.AuthorName}} · изменён {{datetime .UpdatedAt}}
+  {{if .PublishedAt}}· опубликован {{datetime .PublishedAt}}{{end}}
+  · <a href="/admin/entries/{{.ID}}/revisions">ревизии</a>
+  {{if eq .Status "published"}}· <a href="{{entryPath .}}" target="_blank">на сайте ↗</a>{{end}}</p>{{end}}
+{{if $f.ReadOnly}}<p class="flash">Только просмотр: изменять материал в этом статусе вы не можете.</p>{{end}}
+<form method="post" class="card entry-form" action="{{if $f.Entry}}/admin/entries/{{$f.Entry.ID}}{{else}}/admin/entries/new?type={{$f.Type.Name}}{{end}}">
+  {{template "csrf" $}}
+  <fieldset {{if $f.ReadOnly}}disabled{{end}}>
+  <label>Заголовок <input name="title" value="{{$f.Input.Title}}" required maxlength="200"></label>{{template "err" ($f.Err "title")}}
+  <label>Адрес (slug) <input name="slug" value="{{$f.Input.Slug}}" placeholder="строится из заголовка"></label>{{template "err" ($f.Err "slug")}}
+  {{range $f.Type.Fields}}{{template "field" (dict "F" . "Form" $f)}}{{end}}
+  <div class="cols">
+    <label>Рубрики <select name="category_ids" multiple size="5">
+      {{range $f.Categories}}<option value="{{.ID}}" {{if index $f.Selected .ID}}selected{{end}}>{{.Name}}</option>{{end}}</select></label>
+    <label>Теги <input name="tags" value="{{$f.TagsText}}" placeholder="через запятую"></label>
+  </div>
+  <details><summary>Поисковая оптимизация</summary>
+    <label>SEO-заголовок <input name="seo_title" value="{{$f.Input.SEOTitle}}" maxlength="70"></label>{{template "err" ($f.Err "seo_title")}}
+    <label>SEO-описание <textarea name="seo_description" maxlength="160" rows="2">{{$f.Input.SEODescription}}</textarea></label>{{template "err" ($f.Err "seo_description")}}
+  </details>
+  <button>Сохранить</button>
+  </fieldset>
+</form>
+{{with $f.Entry}}<div class="actions">
+  {{range $f.Transitions}}<form method="post" action="/admin/entries/{{$f.Entry.ID}}/transition">{{template "csrf" $}}
+    <input type="hidden" name="name" value="{{.Name}}"><button class="secondary">{{.Label}}</button></form>{{end}}
+  {{if not $f.ReadOnly}}<form method="post" action="/admin/entries/{{.ID}}/delete" onsubmit="return confirm('Удалить материал со всеми ревизиями?')">{{template "csrf" $}}<button class="danger">Удалить</button></form>{{end}}
+</div>{{end}}
+{{end}}
+
+{{define "err"}}{{if .}}<p class="err">{{.}}</p>{{end}}{{end}}
+
+{{define "field"}}{{$n := printf "data.%s" .F.Name}}{{$v := .Form.Value .F.Name}}
+<label>{{.F.Label}}{{if .F.Required}} *{{end}}
+{{if eq .F.Type "markdown"}}<textarea name="{{$n}}" rows="12" class="mono">{{$v}}</textarea>
+{{else if eq .F.Type "text"}}<textarea name="{{$n}}" rows="3">{{$v}}</textarea>
+{{else if eq .F.Type "int"}}<input type="number" name="{{$n}}" value="{{$v}}" {{with .F.Min}}min="{{.}}"{{end}} {{with .F.Max}}max="{{.}}"{{end}}>
+{{else if eq .F.Type "bool"}}<input type="checkbox" name="{{$n}}" {{if .Form.Checked .F.Name}}checked{{end}}>
+{{else if eq .F.Type "date"}}<input type="date" name="{{$n}}" value="{{$v}}">
+{{else if eq .F.Type "datetime"}}<input type="datetime-local" name="{{$n}}" value="{{$v}}">
+{{else if eq .F.Type "url"}}<input type="url" name="{{$n}}" value="{{$v}}">
+{{else if eq .F.Type "select"}}<select name="{{$n}}"><option value="">—</option>{{range .F.Options}}<option {{if eq . $v}}selected{{end}}>{{.}}</option>{{end}}</select>
+{{else if eq .F.Type "media"}}<select name="{{$n}}"><option value="">— без изображения —</option>{{range .Form.Media}}<option value="{{.ID}}" {{if eq (print .ID) $v}}selected{{end}}>#{{.ID}} {{.Filename}} ({{.Width}}×{{.Height}})</option>{{end}}</select>
+{{else}}<input name="{{$n}}" value="{{$v}}">{{end}}
+</label>{{with .F.Help}}<p class="help">{{.}}</p>{{end}}{{template "err" (.Form.Err $n)}}
+{{end}}
