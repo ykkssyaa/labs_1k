@@ -42,3 +42,4 @@ table.list th{background:#f0f2f5;font-weight:600}
 dl{display:grid;grid-template-columns:160px 1fr;gap:4px 12px}dt{color:var(--muted)}dd{margin:0}.pre{white-space:pre-wrap}
 .bars{display:grid;gap:4px}.bar{display:grid;grid-template-columns:110px 1fr 60px;gap:8px;align-items:center;font-size:13px}
 .bar i{display:block;height:14px;background:var(--accent);border-radius:3px;min-width:2px}
+.secondary-link{background:#e8eefb;color:var(--accent)}

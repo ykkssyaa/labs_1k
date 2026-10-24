@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/ykkssyaa/vestnik-cms/internal/access"
+	"github.com/ykkssyaa/vestnik-cms/internal/analytics"
 	"github.com/ykkssyaa/vestnik-cms/internal/auth"
 	"github.com/ykkssyaa/vestnik-cms/internal/content"
 	"github.com/ykkssyaa/vestnik-cms/internal/media"
@@ -34,6 +35,7 @@ type Handler struct {
 	Policy   *access.Policy
 	Render   *render.Engine
 	Settings *store.SettingsRepo
+	Stats    *analytics.Stats
 	// ActiveTheme — текущая тема сайта (решает публичная часть).
 	ActiveTheme func(ctx context.Context) string
 	Log         *slog.Logger
@@ -166,6 +168,8 @@ func (h *Handler) Routes(mux *http.ServeMux) {
 	in("GET /admin/users", h.users)
 	in("POST /admin/users", h.saveUser)
 	in("GET /admin/audit", h.audit)
+	in("GET /admin/stats", h.stats)
+	in("GET /admin/stats.csv", h.statsCSV)
 	in("GET /admin/settings", h.settings)
 	in("POST /admin/settings", h.saveSettings)
 	mux.Handle("GET /admin", http.RedirectHandler("/admin/", http.StatusMovedPermanently))

@@ -89,7 +89,23 @@ var builtinFuncs = template.FuncMap{
 		// Результат — только строка запроса из закодированных значений, безопасна как URL.
 		return template.URL("?" + q.Encode())
 	},
-	"plural": plural,
+	"plural":   plural,
+	"duration": duration,
+}
+
+// duration: «2 ч 15 мин», «40 мин», «—» для нуля.
+func duration(d time.Duration) string {
+	if d <= 0 {
+		return "—"
+	}
+	h, m := int(d.Hours()), int(d.Minutes())%60
+	switch {
+	case h >= 48:
+		return fmt.Sprintf("%d дн %d ч", h/24, h%24)
+	case h > 0:
+		return fmt.Sprintf("%d ч %d мин", h, m)
+	}
+	return fmt.Sprintf("%d мин", max(m, 1))
 }
 
 func asTime(v any) (time.Time, bool) {

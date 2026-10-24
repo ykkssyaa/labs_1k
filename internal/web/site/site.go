@@ -216,6 +216,13 @@ func (h *Handler) home(w http.ResponseWriter, r *http.Request) {
 		h.fail(w, r, err)
 		return
 	}
+	// Главным материалом ставим самый свежий с изображением: без картинки «герой» выглядит пустым.
+	for i, e := range latest {
+		if h.hasCover(ctx, e) {
+			latest[0], latest[i] = latest[i], latest[0]
+			break
+		}
+	}
 	var blocks []homeBlock
 	for _, t := range h.listTypes() {
 		list, _, _ := h.Content.List(ctx, store.EntryFilter{Type: t.Name, Status: content.StatusPublished, Sort: "published", Limit: 4})
@@ -225,6 +232,19 @@ func (h *Handler) home(w http.ResponseWriter, r *http.Request) {
 	}
 	h.render(w, r, http.StatusOK, "home", h.view(r, Meta{Description: "Городское онлайн-издание: новости, статьи, рецензии и афиша"},
 		HomeData{Latest: latest, Blocks: blocks}))
+}
+
+func (h *Handler) hasCover(ctx context.Context, e *content.Entry) bool {
+	t, ok := h.Content.Types.Get(e.Type)
+	if !ok {
+		return false
+	}
+	for _, f := range t.Fields {
+		if f.Type == content.FieldMedia && h.Media(ctx, web.MediaID(e.Data[f.Name])) != nil {
+			return true
+		}
+	}
+	return false
 }
 
 // typeOrPage: /{first} — либо лента типа с таким префиксом, либо статическая страница.
