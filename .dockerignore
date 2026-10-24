@@ -1,0 +1,6 @@
+data
+bin
+.env
+.git
+traces
+e2e/node_modules
