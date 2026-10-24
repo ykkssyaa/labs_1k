@@ -1,0 +1,16 @@
+{
+  "name": "review",
+  "version": 1,
+  "label": "Рецензия",
+  "label_plural": "Рецензии",
+  "url_prefix": "reviews",
+  "fields": [
+    {"name": "subject", "label": "Что рецензируем", "type": "string", "required": true, "max_length": 200},
+    {"name": "subject_kind", "label": "Вид", "type": "select", "required": true,
+     "options": ["книга", "фильм", "спектакль", "выставка", "ресторан"]},
+    {"name": "rating", "label": "Оценка", "type": "int", "required": true, "min": 1, "max": 10},
+    {"name": "body", "label": "Текст", "type": "markdown", "required": true},
+    {"name": "cover", "label": "Обложка", "type": "media"}
+  ],
+  "migrations": []
+}

@@ -1,0 +1,19 @@
+{{define "nav"}}<header class="top">
+  <a class="brand" href="/admin/">Вестник</a>
+  <nav>
+    <a href="/admin/" {{if eq .Section "dashboard"}}class="on"{{end}}>Сводка</a>
+    <a href="/admin/entries" {{if eq .Section "entries"}}class="on"{{end}}>Материалы</a>
+    {{if .Can "entry.transition.publish"}}<a href="/admin/entries?status=review">Модерация</a>{{end}}
+    <a href="/admin/media" {{if eq .Section "media"}}class="on"{{end}}>Медиатека</a>
+    {{if .Can "taxonomy.manage"}}<a href="/admin/terms" {{if eq .Section "terms"}}class="on"{{end}}>Рубрики</a>{{end}}
+    {{if .Can "stats.view"}}<a href="/admin/stats" {{if eq .Section "stats"}}class="on"{{end}}>Статистика</a>{{end}}
+    {{if .Can "audit.view"}}<a href="/admin/audit" {{if eq .Section "audit"}}class="on"{{end}}>Журнал</a>{{end}}
+    {{if .Can "users.manage"}}<a href="/admin/users" {{if eq .Section "users"}}class="on"{{end}}>Пользователи</a>{{end}}
+    {{if .Can "settings.manage"}}<a href="/admin/settings" {{if eq .Section "settings"}}class="on"{{end}}>Настройки</a>{{end}}
+  </nav>
+  <div class="me">
+    <span>{{.Cur.User.Name}} · {{.Cur.User.Role}}</span>
+    <a href="/" target="_blank">Сайт ↗</a>
+    <form method="post" action="/admin/logout">{{template "csrf" .}}<button class="link">Выйти</button></form>
+  </div>
+</header>{{end}}

@@ -1,0 +1,12 @@
+{{define "content"}}{{$d := .Data}}
+<p><a href="/admin/entries/{{$d.Entry.ID}}">← к материалу</a></p>
+{{range $d.Revisions}}{{$rev := .}}<section class="card rev">
+  <h2>Ревизия {{.Number}} <span class="muted">{{datetime .CreatedAt}}, {{if .AuthorName}}{{.AuthorName}}{{else}}система{{end}} — {{.Note}}</span></h2>
+  <details><summary>Содержимое</summary>
+    <dl><dt>Заголовок</dt><dd>{{.Snap.Title}}</dd><dt>Адрес</dt><dd>{{.Snap.Slug}}</dd>
+    {{range $d.Type.Fields}}<dt>{{.Label}}</dt><dd class="pre">{{fieldText $rev.Snap.Data .Name}}</dd>{{end}}</dl>
+  </details>
+  {{if $d.CanRollback}}<form method="post" action="/admin/entries/{{$d.Entry.ID}}/rollback">{{template "csrf" $}}
+    <input type="hidden" name="number" value="{{.Number}}"><button class="secondary">Откатить к этой ревизии</button></form>{{end}}
+</section>{{end}}
+{{end}}

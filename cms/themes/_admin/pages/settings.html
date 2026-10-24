@@ -1,0 +1,8 @@
+{{define "content"}}
+<form method="post" action="/admin/settings" class="card narrow">{{template "csrf" .}}
+  <fieldset><legend><b>Тема публичного сайта</b></legend>
+  {{range .Data.Themes}}<label class="check"><input type="radio" name="theme" value="{{.Name}}" {{if eq .Name $.Data.Active}}checked{{end}}> {{.Label}} <span class="muted">({{.Name}})</span></label>{{end}}
+  </fieldset>
+  <button>Сохранить</button> <a href="/" target="_blank">Открыть сайт ↗</a>
+</form>
+{{end}}

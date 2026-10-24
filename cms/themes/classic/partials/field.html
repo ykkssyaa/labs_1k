@@ -1,0 +1,10 @@
+{{/* Вывод поля материала по его типу из схемы: новый тип отображается без нового шаблона. */}}
+{{define "field"}}{{$v := index .E.Data .F.Name}}{{if $v}}
+{{if eq .F.Type "markdown"}}<div class="body">{{markdown $v}}</div>
+{{else if eq .F.Type "text"}}<p class="lead">{{$v}}</p>
+{{else if eq .F.Type "media"}}{{with media $v}}<figure>{{with index .Variants "large"}}<img src="/uploads/{{.Path}}" width="{{.Width}}" height="{{.Height}}" alt="{{$.F.Label}}">{{end}}{{with .Alt}}<figcaption>{{.}}</figcaption>{{end}}</figure>{{end}}
+{{else if eq .F.Type "url"}}<p class="field"><span>{{.F.Label}}:</span> <a href="{{$v}}" rel="nofollow noopener">{{$v}}</a></p>
+{{else if eq .F.Type "bool"}}<p class="badge">{{.F.Label}}</p>
+{{else if or (eq .F.Type "datetime") (eq .F.Type "date")}}<p class="field"><span>{{.F.Label}}:</span> {{fmtDateTime $v}}</p>
+{{else}}<p class="field"><span>{{.F.Label}}:</span> {{$v}}</p>{{end}}
+{{end}}{{end}}

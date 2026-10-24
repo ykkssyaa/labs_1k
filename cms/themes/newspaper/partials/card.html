@@ -1,0 +1,6 @@
+{{define "card"}}<article class="card np-card">
+  <p class="kicker">{{range .Categories}}{{.Name}} · {{end}}{{typeLabel .Type}}</p>
+  <h3><a href="{{entryPath .}}">{{.Title}}</a></h3>
+  {{with summary . 220}}<p class="summary">{{.}}</p>{{end}}
+  <p class="date">{{.AuthorName}}, {{date .PublishedAt}}</p>
+</article>{{end}}

@@ -1,0 +1,10 @@
+/data/
+/bin/
+.env
+*.db
+*.db-wal
+*.db-shm
+/traces/tool-log.jsonl
+.claude/settings.local.json
+/e2e/node_modules/
+/e2e/test-results/

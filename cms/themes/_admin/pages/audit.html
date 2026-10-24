@@ -1,0 +1,14 @@
+{{define "content"}}{{$d := .Data}}
+<form method="get" class="filters">
+  <select name="user"><option value="">Все пользователи</option>{{range $d.Users}}<option value="{{.ID}}" {{if eq (print .ID) ($.Query.Get "user")}}selected{{end}}>{{.Name}}</option>{{end}}</select>
+  <select name="action"><option value="">Все действия</option>{{range $d.Actions}}<option {{if eq . ($.Query.Get "action")}}selected{{end}}>{{.}}</option>{{end}}</select>
+  <button>Показать</button>
+</form>
+<table class="list">
+  <thead><tr><th>Когда</th><th>Кто</th><th>Действие</th><th>Объект</th><th>Подробности</th></tr></thead>
+  <tbody>{{range $d.Records}}<tr><td>{{datetime .CreatedAt}}</td><td>{{.UserName}}</td><td><code>{{.Action}}</code></td>
+    <td>{{if eq .Object "entry"}}<a href="/admin/entries/{{.ObjectID}}">материал #{{.ObjectID}}</a>{{else if .Object}}{{.Object}} #{{.ObjectID}}{{end}}</td><td>{{.Details}}</td></tr>
+  {{else}}<tr><td colspan="5" class="muted">Записей нет</td></tr>{{end}}</tbody>
+</table>
+{{template "pager" (dict "Pager" $d.Pager "Query" .Query)}}
+{{end}}

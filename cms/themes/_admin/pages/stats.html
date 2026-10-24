@@ -1,0 +1,41 @@
+{{define "content"}}{{$d := .Data.D}}
+<form method="get" class="filters">
+  Период: {{range .Data.Periods}}<a class="btn small {{if ne . $d.Days}}secondary-link{{end}}" href="?days={{.}}">{{.}} {{plural . "день" "дня" "дней"}}</a> {{end}}
+  <span class="muted">{{$d.From}} — {{$d.To}}</span>
+  <a href="/admin/stats.csv?days={{$d.Days}}">Скачать CSV</a>
+</form>
+<section class="tiles">
+  <div class="tile"><b>{{$d.TotalViews}}</b><span>просмотров</span></div>
+  <div class="tile"><b>{{$d.TotalVisitors}}</b><span>уникальных читателей (сумма по дням)</span></div>
+  <div class="tile"><b>{{$d.Published}}</b><span>{{plural $d.Published "публикация" "публикации" "публикаций"}}</span></div>
+  <div class="tile"><b>{{$d.ActiveAuthors}}</b><span>активных сотрудников</span></div>
+  <div class="tile"><b>{{duration $d.ModerationMedian}}</b><span>медиана модерации ({{$d.Moderated}} мат.)</span></div>
+</section>
+<div class="cols">
+  <section class="card">
+    <h2>Просмотры по дням</h2>
+    <div class="bars">{{range $d.ViewsByDay}}<div class="bar"><span>{{.Day}}</span><i style="width: {{.Share}}%"></i><span>{{.Views}} / {{.Visitors}}</span></div>{{end}}</div>
+    <p class="muted">просмотры / уникальные за день</p>
+  </section>
+  <section class="card">
+    <h2>Публикации по дням</h2>
+    <div class="bars">{{range $d.PublishedByDay}}<div class="bar"><span>{{.Day}}</span><i style="width: {{.Share}}%"></i><span>{{.Views}}</span></div>{{end}}</div>
+    <h2>По типам</h2>
+    <table class="list">{{range $d.ByType}}<tr><td>{{typeLabel .Type}}</td><td>{{.Count}}</td></tr>{{else}}<tr><td class="muted">Публикаций нет</td></tr>{{end}}</table>
+  </section>
+</div>
+<div class="cols">
+  <section class="card">
+    <h2>Топ-10 материалов</h2>
+    <table class="list"><thead><tr><th>Материал</th><th>Тип</th><th>Просмотры</th><th>Уникальные</th></tr></thead>
+    <tbody>{{range $d.Top}}<tr><td><a href="/admin/entries/{{.ID}}">{{.Title}}</a></td><td>{{typeLabel .Type}}</td><td>{{.Views}}</td><td>{{.Visitors}}</td></tr>
+    {{else}}<tr><td colspan="4" class="muted">Просмотров нет</td></tr>{{end}}</tbody></table>
+  </section>
+  <section class="card">
+    <h2>Активность сотрудников</h2>
+    <table class="list"><thead><tr><th>Кто</th><th>Создано</th><th>Правок</th><th>На модерацию</th><th>Опубликовано его</th></tr></thead>
+    <tbody>{{range $d.Authors}}<tr><td>{{.Name}}</td><td>{{.Created}}</td><td>{{.Edits}}</td><td>{{.Submitted}}</td><td>{{.Published}}</td></tr>
+    {{else}}<tr><td colspan="5" class="muted">Активности нет</td></tr>{{end}}</tbody></table>
+  </section>
+</div>
+{{end}}

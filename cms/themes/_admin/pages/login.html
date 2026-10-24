@@ -1,0 +1,8 @@
+{{define "content"}}
+<form method="post" action="/admin/login" class="card narrow">
+  <input type="hidden" name="next" value="{{.Data.Next}}">
+  <label>Email <input type="email" name="email" value="{{.Data.Email}}" required autofocus></label>
+  <label>Пароль <input type="password" name="password" required></label>
+  <button>Войти</button>
+</form>
+{{end}}

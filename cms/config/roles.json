@@ -1,0 +1,30 @@
+{
+  "roles": {
+    "admin": {
+      "label": "Администратор",
+      "types": ["*"],
+      "permissions": ["*"]
+    },
+    "editor": {
+      "label": "Редактор",
+      "types": ["*"],
+      "permissions": [
+        "admin.access",
+        "entry.create", "entry.edit", "entry.delete", "entry.rollback",
+        "entry.list.any", "entry.transition.*", "entry.batch",
+        "media.upload", "media.delete",
+        "taxonomy.manage", "audit.view", "stats.view"
+      ]
+    },
+    "author": {
+      "label": "Автор",
+      "types": ["article", "news", "review", "event"],
+      "permissions": [
+        "admin.access",
+        "entry.create", "entry.edit.own", "entry.delete.own", "entry.rollback.own",
+        "entry.transition.submit.own",
+        "media.upload"
+      ]
+    }
+  }
+}

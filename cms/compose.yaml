@@ -1,0 +1,16 @@
+services:
+  vestnik:
+    build: .
+    ports:
+      - "${VESTNIK_PORT:-8080}:8080"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      VESTNIK_SEED: ${VESTNIK_SEED:-1}
+    volumes:
+      - vestnik-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  vestnik-data:
