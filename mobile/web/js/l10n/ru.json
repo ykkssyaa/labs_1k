@@ -1,0 +1,485 @@
+{
+  "@@locale": "ru",
+  "common": {
+    "search": "Поиск",
+    "@search": {
+      "description": "Подсказка в поле поиска"
+    },
+    "clear": "Очистить",
+    "@clear": {
+      "description": "Кнопка очистки (фильтра, поля)"
+    },
+    "cancel": "Отмена",
+    "@cancel": {
+      "description": "Кнопка отмены действия"
+    },
+    "save": "Сохранить",
+    "@save": {
+      "description": "Кнопка сохранения"
+    },
+    "remove": "Удалить",
+    "@remove": {
+      "description": "Кнопка удаления элемента"
+    },
+    "back": "Назад",
+    "@back": {
+      "description": "Подпись кнопки «Назад» для скринридеров"
+    },
+    "emptyTitle": "Ничего не найдено.",
+    "@emptyTitle": {
+      "description": "Заголовок пустого результата поиска"
+    },
+    "emptyDescription": "Попробуйте изменить параметры поиска",
+    "@emptyDescription": {
+      "description": "Подсказка под пустым результатом поиска"
+    }
+  },
+  "nav": {
+    "places": "Список мест",
+    "@places": {
+      "description": "Подпись вкладки списка мест в нижней навигации"
+    },
+    "map": "Карта",
+    "@map": {
+      "description": "Подпись вкладки карты в нижней навигации"
+    },
+    "favorites": "Избранное",
+    "@favorites": {
+      "description": "Подпись вкладки избранного в нижней навигации"
+    },
+    "settings": "Настройки",
+    "@settings": {
+      "description": "Подпись вкладки настроек в нижней навигации"
+    }
+  },
+  "onboarding": {
+    "skip": "Пропустить",
+    "@skip": {
+      "description": "Кнопка пропуска онбординга в правом верхнем углу"
+    },
+    "start": "На старт",
+    "@start": {
+      "description": "Кнопка завершения онбординга на последней странице"
+    },
+    "page1Title": "Добро пожаловать\nв Путеводитель",
+    "@page1Title": {
+      "description": "Заголовок первой страницы онбординга"
+    },
+    "page1Description": "Ищи новые локации и сохраняй\nсамые любимые.",
+    "@page1Description": {
+      "description": "Текст первой страницы онбординга"
+    },
+    "page2Title": "Построй маршрут\nи отправляйся в путь",
+    "@page2Title": {
+      "description": "Заголовок второй страницы онбординга"
+    },
+    "page2Description": "Достигай цели максимально\nбыстро и комфортно.",
+    "@page2Description": {
+      "description": "Текст второй страницы онбординга"
+    },
+    "page3Title": "Добавляй места,\nкоторые нашёл сам",
+    "@page3Title": {
+      "description": "Заголовок третьей страницы онбординга"
+    },
+    "page3Description": "Делись самыми интересными\nи помоги нам стать лучше!",
+    "@page3Description": {
+      "description": "Текст третьей страницы онбординга"
+    }
+  },
+  "places": {
+    "title": "Список\nинтересных мест",
+    "@title": {
+      "description": "Большой заголовок экрана списка мест"
+    },
+    "titleSmall": "Интересные места",
+    "@titleSmall": {
+      "description": "Короткий заголовок экрана списка мест (при прокрутке)"
+    },
+    "found": "{count, plural, =0{Мест не найдено} one{Найдено # место} few{Найдено # места} many{Найдено # мест} other{Найдено # места}}",
+    "@found": {
+      "description": "Количество мест в списке с учётом фильтра (множественное число)",
+      "placeholders": {
+        "count": {
+          "type": "int",
+          "example": "5"
+        }
+      }
+    },
+    "refresh": "Обновить",
+    "@refresh": {
+      "description": "Кнопка обновления списка мест"
+    },
+    "pullToRefresh": "Отпустите, чтобы обновить",
+    "@pullToRefresh": {
+      "description": "Подсказка при потягивании списка вниз"
+    }
+  },
+  "placeType": {
+    "temple": "Храм",
+    "@temple": {
+      "description": "Название категории «храм»"
+    },
+    "monument": "Памятник",
+    "@monument": {
+      "description": "Название категории «памятник»"
+    },
+    "park": "Парк",
+    "@park": {
+      "description": "Название категории «парк»"
+    },
+    "theatre": "Театр",
+    "@theatre": {
+      "description": "Название категории «театр»"
+    },
+    "museum": "Музей",
+    "@museum": {
+      "description": "Название категории «музей»"
+    },
+    "hotel": "Отель",
+    "@hotel": {
+      "description": "Название категории «отель»"
+    },
+    "restaurant": "Ресторан",
+    "@restaurant": {
+      "description": "Название категории «ресторан»"
+    },
+    "cafe": "Кафе",
+    "@cafe": {
+      "description": "Название категории «кафе»"
+    },
+    "other": "Особое место",
+    "@other": {
+      "description": "Название категории «другое»"
+    }
+  },
+  "placeDetails": {
+    "route": "Построить маршрут",
+    "@route": {
+      "description": "Кнопка открытия маршрута до места на карте"
+    },
+    "addToFavorites": "В Избранное",
+    "@addToFavorites": {
+      "description": "Кнопка добавления места в избранное"
+    },
+    "inFavorites": "В Избранном",
+    "@inFavorites": {
+      "description": "Кнопка, когда место уже в избранном"
+    },
+    "photos": "{count, plural, one{# фотография} few{# фотографии} many{# фотографий} other{# фотографии}}",
+    "@photos": {
+      "description": "Количество фотографий в галерее места (множественное число)",
+      "placeholders": {
+        "count": {
+          "type": "int",
+          "example": "5"
+        }
+      }
+    },
+    "distance": "{distance} от центра Москвы",
+    "@distance": {
+      "description": "Расстояние от центра Москвы до места",
+      "placeholders": {
+        "distance": {
+          "type": "String",
+          "example": "1,5 км"
+        }
+      }
+    }
+  },
+  "reviews": {
+    "title": "Отзывы",
+    "@title": {
+      "description": "Заголовок блока отзывов на экране места"
+    },
+    "count": "{count, plural, =0{Нет отзывов} one{# отзыв} few{# отзыва} many{# отзывов} other{# отзыва}}",
+    "@count": {
+      "description": "Количество отзывов о месте (множественное число)",
+      "placeholders": {
+        "count": {
+          "type": "int",
+          "example": "5"
+        }
+      }
+    },
+    "empty": "Отзывов пока нет. Будьте первым!",
+    "@empty": {
+      "description": "Текст, когда у места нет отзывов"
+    },
+    "author": "Ваше имя",
+    "@author": {
+      "description": "Подсказка в поле имени автора отзыва"
+    },
+    "text": "Расскажите о месте",
+    "@text": {
+      "description": "Подсказка в поле текста отзыва"
+    },
+    "rating": "Оценка",
+    "@rating": {
+      "description": "Подпись выбора оценки от 1 до 5"
+    },
+    "send": "Отправить отзыв",
+    "@send": {
+      "description": "Кнопка отправки отзыва"
+    },
+    "sent": "Спасибо за отзыв!",
+    "@sent": {
+      "description": "Сообщение после успешной отправки отзыва"
+    },
+    "date": "{date}",
+    "@date": {
+      "description": "Дата отзыва",
+      "placeholders": {
+        "date": {
+          "type": "DateTime",
+          "format": "yMMMMd"
+        }
+      }
+    }
+  },
+  "errors": {
+    "retry": "Повторить",
+    "@retry": {
+      "description": "Кнопка повтора запроса на экране ошибки"
+    },
+    "noInternetTitle": "Нет соединения с интернетом",
+    "@noInternetTitle": {
+      "description": "Заголовок ошибки отсутствия сети"
+    },
+    "noInternetDescription": "Проверьте подключение к сети или попробуйте подключиться позже",
+    "@noInternetDescription": {
+      "description": "Описание ошибки отсутствия сети"
+    },
+    "serverTitle": "Сервер не отвечает",
+    "@serverTitle": {
+      "description": "Заголовок ошибки сервера или таймаута"
+    },
+    "serverDescription": "Мы уже чиним. Попробуйте повторить чуть позже.",
+    "@serverDescription": {
+      "description": "Описание ошибки сервера или таймаута"
+    },
+    "defaultTitle": "Ошибка",
+    "@defaultTitle": {
+      "description": "Заголовок неизвестной ошибки"
+    },
+    "defaultDescription": "Что то пошло не так. Попробуйте повторить.",
+    "@defaultDescription": {
+      "description": "Описание неизвестной ошибки"
+    }
+  },
+  "filter": {
+    "clear": "Очистить",
+    "@clear": {
+      "description": "Кнопка сброса фильтра в шапке экрана фильтров"
+    },
+    "categories": "Категории",
+    "@categories": {
+      "description": "Заголовок блока категорий на экране фильтров"
+    },
+    "distance": "Расстояние",
+    "@distance": {
+      "description": "Заголовок блока выбора радиуса поиска"
+    },
+    "distanceAny": "любое",
+    "@distanceAny": {
+      "description": "Значение радиуса без ограничения"
+    },
+    "distanceUpTo": "до {distance} от центра Москвы",
+    "@distanceUpTo": {
+      "description": "Выбранный радиус поиска",
+      "placeholders": {
+        "distance": {
+          "type": "String",
+          "example": "3 км"
+        }
+      }
+    },
+    "show": "Показать ({count})",
+    "@show": {
+      "description": "Кнопка применения фильтра с количеством найденных мест",
+      "placeholders": {
+        "count": {
+          "type": "int",
+          "example": "5"
+        }
+      }
+    },
+    "sort": "Сортировка",
+    "@sort": {
+      "description": "Заголовок блока сортировки"
+    },
+    "sortNone": "Без сортировки",
+    "@sortNone": {
+      "description": "Сортировка по умолчанию"
+    },
+    "sortRating": "По рейтингу",
+    "@sortRating": {
+      "description": "Сортировка по среднему рейтингу"
+    },
+    "sortDistance": "По расстоянию",
+    "@sortDistance": {
+      "description": "Сортировка по расстоянию от центра"
+    },
+    "presets": "Сохранённые фильтры",
+    "@presets": {
+      "description": "Заголовок блока пресетов фильтра"
+    },
+    "savePreset": "Сохранить как…",
+    "@savePreset": {
+      "description": "Кнопка сохранения текущего фильтра как пресета"
+    },
+    "presetName": "Название фильтра",
+    "@presetName": {
+      "description": "Запрос названия при сохранении пресета"
+    },
+    "noPresets": "Пока нет сохранённых фильтров",
+    "@noPresets": {
+      "description": "Текст при пустом списке пресетов"
+    }
+  },
+  "search": {
+    "title": "Список интересных мест",
+    "@title": {
+      "description": "Заголовок экрана поиска"
+    },
+    "historyTitle": "Вы искали",
+    "@historyTitle": {
+      "description": "Заголовок истории поиска"
+    },
+    "historyCount": "{count, plural, one{# запрос} few{# запроса} many{# запросов} other{# запроса}}",
+    "@historyCount": {
+      "description": "Количество запросов в истории (множественное число)",
+      "placeholders": {
+        "count": {
+          "type": "int",
+          "example": "5"
+        }
+      }
+    },
+    "clearHistory": "Очистить историю",
+    "@clearHistory": {
+      "description": "Кнопка очистки истории поиска"
+    }
+  },
+  "favorites": {
+    "title": "Избранное",
+    "@title": {
+      "description": "Заголовок экрана избранного"
+    },
+    "count": "{count, plural, one{# место в избранном} few{# места в избранном} many{# мест в избранном} other{# места в избранном}}",
+    "@count": {
+      "description": "Количество избранных мест (множественное число)",
+      "placeholders": {
+        "count": {
+          "type": "int",
+          "example": "5"
+        }
+      }
+    },
+    "emptyTitle": "Пусто",
+    "@emptyTitle": {
+      "description": "Заголовок пустого избранного"
+    },
+    "emptyDescription": "Отмечайте понравившиеся места и они появятся здесь.",
+    "@emptyDescription": {
+      "description": "Описание пустого избранного"
+    }
+  },
+  "map": {
+    "title": "Карта",
+    "@title": {
+      "description": "Заголовок экрана карты"
+    },
+    "open": "Подробнее",
+    "@open": {
+      "description": "Кнопка перехода к месту из всплывающей карточки на карте"
+    }
+  },
+  "settings": {
+    "title": "Настройки",
+    "@title": {
+      "description": "Заголовок экрана настроек"
+    },
+    "darkTheme": "Тёмная тема",
+    "@darkTheme": {
+      "description": "Переключатель тёмной темы"
+    },
+    "tutorial": "Смотреть туториал",
+    "@tutorial": {
+      "description": "Пункт повторного просмотра онбординга"
+    },
+    "language": "Язык",
+    "@language": {
+      "description": "Пункт выбора языка"
+    },
+    "languageSystem": "Как в системе",
+    "@languageSystem": {
+      "description": "Вариант «язык системы»"
+    },
+    "languageRu": "Русский",
+    "@languageRu": {
+      "description": "Вариант «русский язык» (пишется на самом языке)"
+    },
+    "languageEn": "English",
+    "@languageEn": {
+      "description": "Вариант «английский язык» (пишется на самом языке)"
+    },
+    "clearFilters": "Очистить все фильтры",
+    "@clearFilters": {
+      "description": "Кнопка сброса сохранённого фильтра и пресетов"
+    },
+    "filtersCleared": "Фильтры сброшены",
+    "@filtersCleared": {
+      "description": "Сообщение после сброса фильтров"
+    },
+    "about": "О приложении",
+    "@about": {
+      "description": "Заголовок блока информации о приложении"
+    },
+    "placesInDb": "Мест в каталоге: {count}",
+    "@placesInDb": {
+      "description": "Количество мест в каталоге (пример форматирования числа)",
+      "placeholders": {
+        "count": {
+          "type": "int",
+          "format": "decimalPattern",
+          "example": "1 234"
+        }
+      }
+    },
+    "avgPrice": "Средний чек: {price}",
+    "@avgPrice": {
+      "description": "Средний чек в кафе (пример форматирования валюты)",
+      "placeholders": {
+        "price": {
+          "type": "double",
+          "format": "currency",
+          "optionalParameters": {
+            "name": "RUB"
+          },
+          "example": "1 500,50 ₽"
+        }
+      }
+    },
+    "updatedAt": "Каталог обновлён {date}",
+    "@updatedAt": {
+      "description": "Дата обновления каталога (пример форматирования даты)",
+      "placeholders": {
+        "date": {
+          "type": "DateTime",
+          "format": "yMMMMd",
+          "example": "24 октября 2026 г."
+        }
+      }
+    }
+  },
+  "units": {
+    "m": "м",
+    "@m": {
+      "description": "Сокращение «метры»"
+    },
+    "km": "км",
+    "@km": {
+      "description": "Сокращение «километры»"
+    }
+  }
+}
