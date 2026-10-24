@@ -1,0 +1,34 @@
+{{define "content"}}
+<p>{{range .CreatableTypes}}<a class="btn small" href="/admin/entries/new?type={{.Name}}">+ {{.Label}}</a> {{end}}</p>
+<form method="get" action="/admin/entries" class="filters">
+  <select name="type"><option value="">Все типы</option>
+    {{range .Types}}<option value="{{.Name}}" {{if eq .Name $.Data.Filter.Type}}selected{{end}}>{{.LabelPlural}}</option>{{end}}</select>
+  <select name="status"><option value="">Все статусы</option>
+    {{range .Data.Statuses}}<option value="{{.Value}}" {{if eq .Value $.Data.Filter.Status}}selected{{end}}>{{.Label}}</option>{{end}}</select>
+  {{if not .Data.OnlyOwn}}<select name="author"><option value="">Все авторы</option>
+    {{range .Data.Authors}}<option value="{{.ID}}" {{if eq .ID $.Data.Filter.AuthorID}}selected{{end}}>{{.Name}}</option>{{end}}</select>{{end}}
+  <select name="category"><option value="">Все рубрики</option>
+    {{range .Data.Categories}}<option value="{{.ID}}" {{if eq .ID $.Data.Filter.CategoryID}}selected{{end}}>{{.Name}}</option>{{end}}</select>
+  <input type="search" name="q" value="{{.Data.Filter.Query}}" placeholder="Поиск по тексту">
+  <button>Найти</button> <a href="/admin/entries">Сбросить</a>
+</form>
+<form method="post" action="/admin/entries/batch">
+  {{template "csrf" .}}<input type="hidden" name="back" value="/admin/entries{{query .Query}}">
+  <table class="list">
+    <thead><tr>{{if .Can "entry.batch"}}<th><input type="checkbox" onclick="for(const c of document.querySelectorAll('input[name=ids]'))c.checked=this.checked" aria-label="Выбрать все"></th>{{end}}
+      <th>Заголовок</th><th>Тип</th><th>Статус</th><th>Автор</th><th>Рубрики</th><th>Изменён</th></tr></thead>
+    <tbody>
+    {{range .Data.Entries}}<tr>
+      {{if $.Can "entry.batch"}}<td><input type="checkbox" name="ids" value="{{.ID}}" aria-label="Выбрать"></td>{{end}}
+      <td><a href="/admin/entries/{{.ID}}">{{.Title}}</a></td>
+      <td>{{typeLabel .Type}}</td><td>{{template "status" .Status}}</td><td>{{.AuthorName}}</td>
+      <td>{{range .Categories}}{{.Name}} {{end}}</td><td>{{datetime .UpdatedAt}}</td>
+    </tr>{{else}}<tr><td colspan="7" class="muted">Ничего не найдено</td></tr>{{end}}
+    </tbody>
+  </table>
+  {{if .Can "entry.batch"}}<p class="batch">С выбранными:
+    <select name="action">{{range .Data.Batch}}<option value="{{.Name}}">{{.Label}}</option>{{end}}</select>
+    <button onclick="return confirm('Применить к выбранным?')">Применить</button></p>{{end}}
+</form>
+{{template "pager" (dict "Pager" .Data.Pager "Query" .Query)}}
+{{end}}

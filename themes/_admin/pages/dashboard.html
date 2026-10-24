@@ -1,0 +1,18 @@
+{{define "content"}}
+<section class="tiles">
+  {{range $.Data.Statuses}}<a class="tile" href="/admin/entries?status={{.Value}}"><b>{{index $.Data.Counts .Value}}</b><span>{{.Label}}</span></a>{{end}}
+</section>
+<div class="cols">
+  {{if .Can "entry.transition.publish"}}<section class="card">
+    <h2>Ждут модерации</h2>
+    {{range .Data.Review}}<p><a href="/admin/entries/{{.ID}}">{{.Title}}</a> <span class="muted">{{.AuthorName}}, {{datetime .UpdatedAt}}</span></p>
+    {{else}}<p class="muted">Очередь пуста</p>{{end}}
+  </section>{{end}}
+  <section class="card">
+    <h2>Мои черновики</h2>
+    {{range .Data.MyDrafts}}<p><a href="/admin/entries/{{.ID}}">{{.Title}}</a> <span class="muted">{{datetime .UpdatedAt}}</span></p>
+    {{else}}<p class="muted">Черновиков нет</p>{{end}}
+    <p>{{range .CreatableTypes}}<a class="btn small" href="/admin/entries/new?type={{.Name}}">+ {{.Label}}</a> {{end}}</p>
+  </section>
+</div>
+{{end}}

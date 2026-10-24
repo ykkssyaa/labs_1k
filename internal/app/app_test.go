@@ -6,12 +6,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/ykkssyaa/vestnik-cms/internal/config"
 )
 
 func TestHealthz(t *testing.T) {
-	a, err := New(config.Config{DBPath: ":memory:", ContentTypesDir: "../../content_types"}, slog.New(slog.NewTextHandler(io.Discard, nil)))
+	a, err := New(TestConfig("../.."), slog.New(slog.NewTextHandler(io.Discard, nil)))
 	if err != nil {
 		t.Fatal(err)
 	}
