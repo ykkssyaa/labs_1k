@@ -1,0 +1,5 @@
+{{define "content"}}
+<h1>{{.Data.Heading}}</h1>
+<div class="grid">{{range .Data.Entries}}{{template "card" .}}{{else}}<p class="empty">Материалов нет.</p>{{end}}</div>
+{{template "pager" (dict "P" .Data "Q" .Query)}}
+{{end}}

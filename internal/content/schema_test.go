@@ -138,6 +138,7 @@ func TestParseTypeRejectsBrokenSchemas(t *testing.T) {
 		"zero version":       `{"name":"x","version":0,"label":"X","fields":[{"name":"a","type":"string"}]}`,
 		"migration future":   `{"name":"x","version":1,"label":"X","fields":[{"name":"a","type":"string"}],"migrations":[{"to_version":2,"ops":[]}]}`,
 		"bad pattern":        `{"name":"x","version":1,"label":"X","fields":[{"name":"a","type":"string","pattern":"("}]}`,
+		"reserved prefix":    `{"name":"x","version":1,"label":"X","url_prefix":"admin","fields":[{"name":"a","type":"string"}]}`,
 	}
 	for name, raw := range cases {
 		t.Run(name, func(t *testing.T) {

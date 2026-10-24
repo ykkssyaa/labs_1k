@@ -1,0 +1,3 @@
+{{define "menu"}}<nav class="menu"><div class="wrap">
+  {{range .Menu}}<a href="{{.URL}}" {{if .Active}}class="active" aria-current="page"{{end}}>{{.Title}}</a>{{end}}
+</div></nav>{{end}}

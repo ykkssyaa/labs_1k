@@ -33,7 +33,10 @@ type Handler struct {
 	Auth     *auth.Service
 	Policy   *access.Policy
 	Render   *render.Engine
-	Log      *slog.Logger
+	Settings *store.SettingsRepo
+	// ActiveTheme — текущая тема сайта (решает публичная часть).
+	ActiveTheme func(ctx context.Context) string
+	Log         *slog.Logger
 	// SecureCookie — ставить Secure на cookie (за HTTPS).
 	SecureCookie bool
 }
@@ -163,6 +166,8 @@ func (h *Handler) Routes(mux *http.ServeMux) {
 	in("GET /admin/users", h.users)
 	in("POST /admin/users", h.saveUser)
 	in("GET /admin/audit", h.audit)
+	in("GET /admin/settings", h.settings)
+	in("POST /admin/settings", h.saveSettings)
 	mux.Handle("GET /admin", http.RedirectHandler("/admin/", http.StatusMovedPermanently))
 }
 

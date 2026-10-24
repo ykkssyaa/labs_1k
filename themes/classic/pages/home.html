@@ -1,0 +1,15 @@
+{{define "content"}}
+{{with .Data.Latest}}<section class="lead-block">
+  {{with index . 0}}<article class="hero">
+    {{with cover .}}{{with index .Variants "large"}}<a href="{{entryPath $}}"><img src="/uploads/{{.Path}}" alt="" width="{{.Width}}" height="{{.Height}}"></a>{{end}}{{end}}
+    <p class="kicker">{{typeLabel .Type}}{{range .Categories}} · {{.Name}}{{end}}</p>
+    <h1><a href="{{entryPath .}}">{{.Title}}</a></h1>
+    {{with summary . 240}}<p class="summary">{{.}}</p>{{end}}
+  </article>{{end}}
+  <div class="latest">{{range $i, $e := .}}{{if $i}}{{template "card" $e}}{{end}}{{end}}</div>
+</section>{{else}}<p class="empty">Пока ничего не опубликовано.</p>{{end}}
+{{range .Data.Blocks}}<section class="block">
+  <h2><a href="/{{.Type.URLPrefix}}">{{.Type.LabelPlural}}</a></h2>
+  <div class="grid">{{range .Entries}}{{template "card" .}}{{end}}</div>
+</section>{{end}}
+{{end}}
