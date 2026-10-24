@@ -305,7 +305,18 @@ func TestSEOAndMedia(t *testing.T) {
 			t.Errorf("на странице нет %s", want)
 		}
 	}
-	if resp, _ := anon.Get("/uploads/" + m.Variants["medium"].Path); resp.StatusCode != 200 || resp.Header.Get("Content-Type") != "image/jpeg" {
+	// Главная и ленты с обложками: ветки шаблонов с изображениями тоже должны рендериться в обеих темах.
+	for _, theme := range []string{"classic", "newspaper"} {
+		e.App.DB.Exec(`INSERT INTO settings (key, value, updated_at) VALUES ('theme', ?, '') ON CONFLICT(key) DO UPDATE SET value = excluded.value`, theme)
+		for _, p := range []string{"/", "/articles", "/articles/novaya-naberezhnaya"} {
+			resp, body := anon.Get(p)
+			wantImage := theme == "classic" || p != "/articles" // карточки газетной темы — без картинок, это её стиль
+			if resp.StatusCode != 200 || strings.Contains(body, "/uploads/") != wantImage {
+				t.Errorf("%s %s: код %d, изображение в разметке: %v", theme, p, resp.StatusCode, strings.Contains(body, "/uploads/"))
+			}
+		}
+	}
+	if resp, _ := anon.Get("/uploads/" + m.Variants["medium"].Path);resp.StatusCode != 200 || resp.Header.Get("Content-Type") != "image/jpeg" {
 		t.Errorf("вариант изображения не отдаётся: %d", resp.StatusCode)
 	}
 	dir := m.Path[:strings.LastIndex(m.Path, "/")+1]
