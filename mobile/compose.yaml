@@ -35,7 +35,7 @@ services:
       sh -c "npm install --no-audit --no-fund &&
              npm run test:unit &&
              npx playwright test --output=/tmp/test-results $${PW_ARGS:-};
-             code=$$?; chown -R $${OWNER} test/e2e/goldens 2>/dev/null; exit $$code"
+             code=$$?; chown -R $${OWNER} test/e2e/goldens package-lock.json 2>/dev/null; exit $$code"
 
 volumes:
   reviews:
