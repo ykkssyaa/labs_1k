@@ -1,0 +1,14 @@
+{
+  "name": "news",
+  "version": 1,
+  "label": "Новость",
+  "label_plural": "Новости",
+  "url_prefix": "news",
+  "fields": [
+    {"name": "lead", "label": "Лид", "type": "text", "required": true, "max_length": 280},
+    {"name": "body", "label": "Текст", "type": "markdown", "required": true},
+    {"name": "source_url", "label": "Источник", "type": "url"},
+    {"name": "is_breaking", "label": "Срочная", "type": "bool"}
+  ],
+  "migrations": []
+}

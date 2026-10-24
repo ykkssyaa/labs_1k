@@ -1,0 +1,15 @@
+{
+  "name": "article",
+  "version": 1,
+  "label": "Статья",
+  "label_plural": "Статьи",
+  "url_prefix": "articles",
+  "fields": [
+    {"name": "lead", "label": "Лид", "type": "text", "required": true, "max_length": 300,
+     "help": "Один-два предложения, показываются в списках"},
+    {"name": "body", "label": "Текст", "type": "markdown", "required": true},
+    {"name": "cover", "label": "Обложка", "type": "media"},
+    {"name": "reading_time", "label": "Время чтения, мин", "type": "int", "min": 1, "max": 120}
+  ],
+  "migrations": []
+}

@@ -1,0 +1,16 @@
+{
+  "name": "event",
+  "version": 1,
+  "label": "Событие",
+  "label_plural": "Афиша",
+  "url_prefix": "events",
+  "fields": [
+    {"name": "starts_at", "label": "Начало", "type": "datetime", "required": true},
+    {"name": "ends_at", "label": "Окончание", "type": "datetime", "after": "starts_at"},
+    {"name": "venue", "label": "Место", "type": "string", "required": true, "max_length": 200},
+    {"name": "price", "label": "Цена", "type": "string", "max_length": 100},
+    {"name": "body", "label": "Описание", "type": "markdown"},
+    {"name": "cover", "label": "Обложка", "type": "media"}
+  ],
+  "migrations": []
+}
