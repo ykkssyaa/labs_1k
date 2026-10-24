@@ -10,11 +10,11 @@ export function placeDetailScreen(app, match) {
   async function load() {
     // данные из перехода показываем сразу, потом обновляем с сервера
     if (match.extra) show(match.extra);
-    else render(el, h('div', { class: 'center' }, backButton(app), loader()));
+    else render(el, topBar(app), h('div', { class: 'center' }, loader()));
 
     const result = await app.placesRepository.getPlaceDetails(id);
     if (!result.ok) {
-      if (!match.extra) render(el, backButton(app), errorPlaceholder(app, result.error, load));
+      if (!match.extra) render(el, topBar(app), errorPlaceholder(app, result.error, load));
       return;
     }
     // расстояние приходит только в списке, поэтому берём его из переданного места
@@ -29,6 +29,10 @@ export function placeDetailScreen(app, match) {
 
   load();
   return { el };
+}
+
+function topBar(app) {
+  return h('div', { class: 'place-detail__top' }, backButton(app));
 }
 
 function gallery(app, place) {
