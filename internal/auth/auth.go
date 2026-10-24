@@ -173,7 +173,9 @@ func (s *Service) checkUser(in *UserInput, creating bool) error {
 // FormErrors — ошибки полей формы пользователя.
 type FormErrors map[string]string
 
-func (e FormErrors) Error() string { return fmt.Sprintf("ошибки в форме: %v", map[string]string(e)) }
+func (e FormErrors) Error() string {
+	return fmt.Sprintf("ошибки в форме: %v", map[string]string(e))
+}
 
 // CreateUser создаёт пользователя. actor с нулевым ID — системная команда (adduser, seed).
 func (s *Service) CreateUser(ctx context.Context, actor access.Actor, in UserInput) (*store.User, error) {
