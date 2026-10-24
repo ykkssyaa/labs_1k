@@ -316,7 +316,7 @@ func TestSEOAndMedia(t *testing.T) {
 			}
 		}
 	}
-	if resp, _ := anon.Get("/uploads/" + m.Variants["medium"].Path);resp.StatusCode != 200 || resp.Header.Get("Content-Type") != "image/jpeg" {
+	if resp, _ := anon.Get("/uploads/" + m.Variants["medium"].Path); resp.StatusCode != 200 || resp.Header.Get("Content-Type") != "image/jpeg" {
 		t.Errorf("вариант изображения не отдаётся: %d", resp.StatusCode)
 	}
 	dir := m.Path[:strings.LastIndex(m.Path, "/")+1]
