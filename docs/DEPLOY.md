@@ -52,6 +52,7 @@ make build                      # bin/vestnik, статический бинар
 | `VESTNIK_UPLOADS` | `data/uploads` | каталог медиа |
 | `VESTNIK_THEME` | `classic` | тема по умолчанию (дальше — из настроек в панели) |
 | `VESTNIK_ADMIN_EMAIL`, `VESTNIK_ADMIN_PASSWORD` | — | администратор, создаваемый `seed` |
+| `VESTNIK_PORT` | `8080` | внешний порт в docker compose |
 | `VESTNIK_SEED` | `0` (`1` в compose) | заполнить пустую БД демо-данными при старте |
 
 ## Эксплуатация
