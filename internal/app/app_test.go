@@ -11,7 +11,7 @@ import (
 )
 
 func TestHealthz(t *testing.T) {
-	a, err := New(config.Config{DBPath: ":memory:"}, slog.New(slog.NewTextHandler(io.Discard, nil)))
+	a, err := New(config.Config{DBPath: ":memory:", ContentTypesDir: "../../content_types"}, slog.New(slog.NewTextHandler(io.Discard, nil)))
 	if err != nil {
 		t.Fatal(err)
 	}
