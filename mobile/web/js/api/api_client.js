@@ -12,10 +12,11 @@ export const ApiUrls = {
  * базовый URL, таймаут 30 сек и цепочка перехватчиков.
  */
 export class HttpClient {
-  constructor({ baseUrl = '', timeout = 30000, interceptors = [], fetchFn = globalThis.fetch } = {}) {
+  constructor({ baseUrl = '', timeout = 30000, interceptors = [], fetchFn = (...args) => globalThis.fetch(...args) } = {}) {
     this.baseUrl = baseUrl;
     this.timeout = timeout;
     this.interceptors = interceptors;
+    // fetch в браузере нельзя вызывать как метод другого объекта, поэтому обёртка
     this.fetchFn = fetchFn;
   }
 

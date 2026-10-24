@@ -1,0 +1,41 @@
+services:
+  app:
+    build: .
+    network_mode: bridge   # без отдельной сети compose
+    ports:
+      - "8888:8888"
+    environment:
+      DELAY_MS: ${DELAY_MS:-300}   # задержка ответа, чтобы были видны загрузчики
+      FAIL_RATE: ${FAIL_RATE:-0}   # доля ответов 503, например 0.3 — проверка ошибок и повторов
+    volumes:
+      - reviews:/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8888/place"]
+      interval: 2s
+      retries: 15
+
+  # docker compose --profile test run --rm tests
+  tests:
+    profiles: [test]
+    image: mcr.microsoft.com/playwright:v1.49.1-noble
+    working_dir: /work
+    network_mode: "service:app"   # тесты ходят на localhost приложения
+    environment:
+      BASE_URL: http://localhost:8888
+      OWNER: "${UID:-1000}:${GID:-1000}"
+      PW_ARGS: ${PW_ARGS:-}
+    volumes:
+      - ./:/work
+      - /work/node_modules
+    depends_on:
+      app:
+        condition: service_healthy
+    # node_modules и test-results остаются внутри контейнера, эталоны скриншотов отдаём владельцу проекта
+    command: >
+      sh -c "npm install --no-audit --no-fund &&
+             npm run test:unit &&
+             npx playwright test --output=/tmp/test-results $${PW_ARGS:-};
+             code=$$?; chown -R $${OWNER} test/e2e/goldens 2>/dev/null; exit $$code"
+
+volumes:
+  reviews:
