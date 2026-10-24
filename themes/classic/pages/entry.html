@@ -3,7 +3,9 @@
   <p class="kicker"><a href="/{{.Data.Type.URLPrefix}}">{{.Data.Type.Label}}</a>{{range $e.Categories}} · <a href="/section/{{.Slug}}">{{.Name}}</a>{{end}}</p>
   <h1>{{$e.Title}}</h1>
   <p class="byline">{{$e.AuthorName}} · <time datetime="{{isodate $e.PublishedAt}}">{{date $e.PublishedAt}}</time></p>
-  {{range .Data.Type.Fields}}{{template "field" (dict "F" . "E" $e)}}{{end}}
+  {{/* Изображения — сразу под подписью, остальные поля — в порядке схемы. */}}
+  {{range .Data.Type.Fields}}{{if eq .Type "media"}}{{template "field" (dict "F" . "E" $e)}}{{end}}{{end}}
+  {{range .Data.Type.Fields}}{{if ne .Type "media"}}{{template "field" (dict "F" . "E" $e)}}{{end}}{{end}}
   {{with $e.Tags}}<p class="tags">{{range .}}<a href="/tag/{{.Slug}}">#{{.Name}}</a> {{end}}</p>{{end}}
 </article>
 {{with .Data.Related}}<section class="block"><h2>Ещё в рубрике</h2><div class="grid">{{range .}}{{template "card" .}}{{end}}</div></section>{{end}}

@@ -2,7 +2,7 @@ services:
   vestnik:
     build: .
     ports:
-      - "8080:8080"
+      - "${VESTNIK_PORT:-8080}:8080"
     env_file:
       - path: .env
         required: false

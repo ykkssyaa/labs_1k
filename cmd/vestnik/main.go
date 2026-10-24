@@ -1,7 +1,9 @@
 // Команда vestnik — сервер CMS и служебные подкоманды.
 //
-//	vestnik serve    — запустить сервер (по умолчанию)
+//	vestnik serve    — запустить сервер (по умолчанию); при VESTNIK_SEED=1 заполняет пустую БД демо-данными
 //	vestnik migrate  — только применить миграции
+//	vestnik seed     — заполнить пустую БД демо-данными
+//	vestnik rollup   — свернуть статистику просмотров за завершённые дни
 //	vestnik adduser EMAIL ИМЯ РОЛЬ ПАРОЛЬ — создать пользователя
 package main
 
@@ -20,6 +22,7 @@ import (
 	"github.com/ykkssyaa/vestnik-cms/internal/app"
 	"github.com/ykkssyaa/vestnik-cms/internal/auth"
 	"github.com/ykkssyaa/vestnik-cms/internal/config"
+	"github.com/ykkssyaa/vestnik-cms/internal/seed"
 )
 
 func main() {
@@ -44,18 +47,30 @@ func run(cmd string, args []string, log *slog.Logger) error {
 		return err
 	}
 	defer a.Close()
+	ctx := context.Background()
 
 	switch cmd {
 	case "migrate":
 		log.Info("migrations applied", "db", cfg.DBPath)
 		return nil
+	case "seed":
+		return seed.Run(ctx, a, cfg.AdminEmail, cfg.AdminPassword, log)
+	case "rollup":
+		days, err := a.Stats.Rollup(ctx)
+		log.Info("rollup", "days", days)
+		return err
 	case "serve":
+		if cfg.Seed {
+			if err := seed.Run(ctx, a, cfg.AdminEmail, cfg.AdminPassword, log); err != nil {
+				return fmt.Errorf("seed: %w", err)
+			}
+		}
 		return serve(a)
 	case "adduser":
 		if len(args) != 4 {
 			return fmt.Errorf("использование: vestnik adduser EMAIL ИМЯ РОЛЬ ПАРОЛЬ")
 		}
-		u, err := a.Auth.CreateUser(context.Background(), access.Actor{},
+		u, err := a.Auth.CreateUser(ctx, access.Actor{},
 			auth.UserInput{Email: args[0], Name: args[1], Role: args[2], Password: args[3]})
 		if err != nil {
 			return err
@@ -75,6 +90,7 @@ func serve(a *app.App) error {
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
+	go a.RunRollup(ctx, time.Hour)
 	go func() {
 		<-ctx.Done()
 		shutdown, cancel := context.WithTimeout(context.Background(), 5*time.Second)

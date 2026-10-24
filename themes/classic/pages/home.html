@@ -1,7 +1,7 @@
 {{define "content"}}
 {{with .Data.Latest}}<section class="lead-block">
-  {{with index . 0}}<article class="hero">
-    {{with cover .}}{{with index .Variants "large"}}<a href="{{entryPath $}}"><img src="/uploads/{{.Path}}" alt="" width="{{.Width}}" height="{{.Height}}"></a>{{end}}{{end}}
+  {{with index . 0}}{{$hero := .}}<article class="hero">
+    {{with cover .}}{{with index .Variants "large"}}<a href="{{entryPath $hero}}"><img src="/uploads/{{.Path}}" alt="" width="{{.Width}}" height="{{.Height}}"></a>{{end}}{{end}}
     <p class="kicker">{{typeLabel .Type}}{{range .Categories}} · {{.Name}}{{end}}</p>
     <h1><a href="{{entryPath .}}">{{.Title}}</a></h1>
     {{with summary . 240}}<p class="summary">{{.}}</p>{{end}}

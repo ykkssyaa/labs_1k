@@ -237,6 +237,42 @@ func TestAPIPaginationAndFilters(t *testing.T) {
 	}
 }
 
+// Сценарий 5. Просмотры на сайте попадают в статистику; экран статистики — по праву stats.view.
+func TestViewsReachStatsScreen(t *testing.T) {
+	e := testkit.NewEnv(t, root)
+	ctx := context.Background()
+	ed := e.Actor("editor@v.ru")
+	a, _ := e.App.Content.Create(ctx, ed, "article", content.Input{Title: "Читаемый материал", Data: map[string]any{"lead": "Л", "body": "Т"}})
+	e.App.Content.Transition(ctx, ed, a.ID, "submit")
+	e.App.Content.Transition(ctx, ed, a.ID, "publish")
+
+	view := func(ua string) {
+		req, _ := http.NewRequest(http.MethodGet, e.Srv.URL+"/articles/chitaemyy-material", nil)
+		req.Header.Set("User-Agent", ua)
+		e.Anon().Do(req)
+	}
+	view("Mozilla/5.0 Firefox/131.0")
+	view("Mozilla/5.0 Firefox/131.0") // повтор в течение 30 минут
+	view("Googlebot/2.1")
+	view("Mozilla/5.0 Chrome/130.0") // другой посетитель (другой User-Agent)
+
+	if resp, _ := e.Login("author@v.ru").Get("/admin/stats"); resp.StatusCode != http.StatusForbidden {
+		t.Fatalf("автору статистика недоступна, получили %d", resp.StatusCode)
+	}
+	edc := e.Login("editor@v.ru")
+	resp, body := edc.Get("/admin/stats?days=7")
+	if resp.StatusCode != 200 {
+		t.Fatalf("статистика: %d", resp.StatusCode)
+	}
+	if !strings.Contains(body, "<b>2</b><span>просмотров</span>") || !strings.Contains(body, "Читаемый материал") {
+		t.Fatalf("ожидали 2 просмотра (повтор и бот не считаются) и материал в топе")
+	}
+	resp, csv := edc.Get("/admin/stats.csv?days=7")
+	if resp.StatusCode != 200 || !strings.HasPrefix(csv, "day,views,visitors,published\n") || !strings.Contains(csv, ",2,2,1") {
+		t.Fatalf("CSV: %d\n%s", resp.StatusCode, csv)
+	}
+}
+
 // SEO: метатеги из модели, og:image из обложки, sitemap, robots, 404.
 func TestSEOAndMedia(t *testing.T) {
 	e := testkit.NewEnv(t, root)
@@ -267,6 +303,17 @@ func TestSEOAndMedia(t *testing.T) {
 	} {
 		if !strings.Contains(body, want) {
 			t.Errorf("на странице нет %s", want)
+		}
+	}
+	// Главная и ленты с обложками: ветки шаблонов с изображениями тоже должны рендериться в обеих темах.
+	for _, theme := range []string{"classic", "newspaper"} {
+		e.App.DB.Exec(`INSERT INTO settings (key, value, updated_at) VALUES ('theme', ?, '') ON CONFLICT(key) DO UPDATE SET value = excluded.value`, theme)
+		for _, p := range []string{"/", "/articles", "/articles/novaya-naberezhnaya"} {
+			resp, body := anon.Get(p)
+			wantImage := theme == "classic" || p != "/articles" // карточки газетной темы — без картинок, это её стиль
+			if resp.StatusCode != 200 || strings.Contains(body, "/uploads/") != wantImage {
+				t.Errorf("%s %s: код %d, изображение в разметке: %v", theme, p, resp.StatusCode, strings.Contains(body, "/uploads/"))
+			}
 		}
 	}
 	if resp, _ := anon.Get("/uploads/" + m.Variants["medium"].Path); resp.StatusCode != 200 || resp.Header.Get("Content-Type") != "image/jpeg" {

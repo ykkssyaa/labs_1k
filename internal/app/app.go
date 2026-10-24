@@ -8,8 +8,10 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/ykkssyaa/vestnik-cms/internal/access"
+	"github.com/ykkssyaa/vestnik-cms/internal/analytics"
 	"github.com/ykkssyaa/vestnik-cms/internal/auth"
 	"github.com/ykkssyaa/vestnik-cms/internal/config"
 	"github.com/ykkssyaa/vestnik-cms/internal/content"
@@ -33,6 +35,8 @@ type App struct {
 	Media    *media.Service
 	Auth     *auth.Service
 	Render   *render.Engine
+	Tracker  *analytics.Tracker
+	Stats    *analytics.Stats
 }
 
 func New(cfg config.Config, log *slog.Logger) (*App, error) {
@@ -73,6 +77,11 @@ func build(cfg config.Config, log *slog.Logger, db *sql.DB) (*App, error) {
 	if a.Render, err = render.New(cfg.ThemesDir, web.Funcs(types, lookup)); err != nil {
 		return nil, fmt.Errorf("themes: %w", err)
 	}
+
+	if a.Tracker, err = analytics.NewTracker(context.Background(), db, cfg.BaseURL); err != nil {
+		return nil, fmt.Errorf("analytics: %w", err)
+	}
+	a.Stats = analytics.NewStats(db)
 
 	synced, err := a.Content.Sync(context.Background())
 	if err != nil {
@@ -116,15 +125,38 @@ func (a *App) Handler() http.Handler {
 		return nil
 	}
 	pub := &site.Handler{Content: a.Content, Taxonomy: a.Taxonomy, Render: a.Render, Settings: settings, Media: lookup,
-		BaseURL: a.Cfg.BaseURL, DefaultTheme: a.Cfg.Theme, SiteName: "Вестник", Log: a.Log}
+		BaseURL: a.Cfg.BaseURL, DefaultTheme: a.Cfg.Theme, SiteName: "Вестник", Log: a.Log,
+		OnView: func(r *http.Request, e *content.Entry) {
+			if _, err := a.Tracker.Track(r.Context(), r, e.ID); err != nil {
+				a.Log.Warn("track view", "entry", e.ID, "err", err) // статистика не должна ломать показ страницы
+			}
+		}}
 	pub.Routes(mux)
 	(&api.Handler{Content: a.Content, Taxonomy: a.Taxonomy, Media: lookup, BaseURL: a.Cfg.BaseURL, Log: a.Log}).Routes(mux)
 
 	adm := &admin.Handler{Content: a.Content, Taxonomy: a.Taxonomy, Media: a.Media, Auth: a.Auth, Policy: a.Policy,
-		Render: a.Render, Settings: settings, ActiveTheme: pub.Theme, Log: a.Log,
+		Render: a.Render, Settings: settings, Stats: a.Stats, ActiveTheme: pub.Theme, Log: a.Log,
 		SecureCookie: strings.HasPrefix(a.Cfg.BaseURL, "https://")}
 	adm.Routes(mux)
 	return a.securityHeaders(a.logRequests(mux))
+}
+
+// RunRollup сворачивает статистику сразу и затем раз в interval, пока жив ctx.
+func (a *App) RunRollup(ctx context.Context, interval time.Duration) {
+	tick := time.NewTicker(interval)
+	defer tick.Stop()
+	for {
+		if days, err := a.Stats.Rollup(ctx); err != nil {
+			a.Log.Error("rollup", "err", err)
+		} else if days > 0 {
+			a.Log.Info("rollup", "days", days)
+		}
+		select {
+		case <-ctx.Done():
+			return
+		case <-tick.C:
+		}
+	}
 }
 
 // noDirListing запрещает просмотр каталогов загрузок.

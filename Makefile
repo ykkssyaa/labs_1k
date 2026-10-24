@@ -1,4 +1,6 @@
 STATICCHECK := honnef.co/go/tools/cmd/staticcheck@2025.1.1
+# Не скачивать молча новый тулчейн: go.mod обязан собираться Go 1.25 (см. журнал ИИ).
+export GOTOOLCHAIN := local
 
 .PHONY: run build test lint check fmt docker
 
